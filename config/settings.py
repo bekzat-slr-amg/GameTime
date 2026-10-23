@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "apps.core",
+    "apps.accounts",
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+AUTH_USER_MODEL = "accounts.User"
 
 LANGUAGE_CODE = "ru"
 TIME_ZONE = "Asia/Bishkek"
