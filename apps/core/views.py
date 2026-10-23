@@ -21,7 +21,7 @@ def home(request):
     ]
     zones = Zone.objects.filter(is_active=True).annotate(
         places=Count("equipment", filter=Q(equipment__is_active=True))
-    )
+    ).order_by("name")
 
     return render(request, "core/home.html", {
         "features": FEATURES,
