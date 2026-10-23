@@ -22,14 +22,26 @@
   <div class="overflow-hidden rounded-2xl border border-line">
     <img src="{% static 'images/hero-club.jpg' %}"
          alt="Игровой зал клуба GameTime с компьютерами и неоновой подсветкой"
-         width="1280" height="720"
-         fetchpriority="high"
+         width="1280" height="720" fetchpriority="high"
          class="h-full w-full object-cover">
   </div>
 </section>
 
-<section id="equipment" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-10 sm:px-6">
-  <h2 class="text-2xl font-extrabold">Популярное оборудование</h2>
-  <p class="mt-2 text-muted">Временный блок: карточки добавим следующим шагом.</p>
+<section class="mx-auto max-w-7xl px-4 sm:px-6" aria-label="Преимущества клуба">
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+    {% for f in features %}
+      {% include "partials/feature_card.html" with icon=f.icon title=f.title text=f.text %}
+    {% endfor %}
+  </div>
+</section>
+
+<section id="equipment" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-12 sm:px-6">
+  <h2 class="border-l-4 border-lime pl-3 text-2xl font-extrabold">Популярное оборудование</h2>
+  <p class="mt-2 text-sm text-muted">Демо-данные: позже здесь будет реальное оборудование из базы.</p>
+  <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {% for item in equipment %}
+      {% include "partials/equipment_card.html" %}
+    {% endfor %}
+  </div>
 </section>
 {% endblock %}
