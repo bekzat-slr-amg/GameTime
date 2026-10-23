@@ -1,0 +1,22 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Django
+*.sqlite3
+/media/
+/staticfiles/
+
+# Секреты
+.env
+
+# Node / Tailwind
+node_modules/
+
+# IDE и ОС
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
