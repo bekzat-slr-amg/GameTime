@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar %}
+<header class="relative z-10 border-b border-line bg-bg/80 backdrop-blur">
+  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+    <a href="{% url 'core:home' %}" class="text-xl font-extrabold tracking-tight">Game<span class="text-lime">Time</span></a>
+    {% block header_link %}{% endblock %}
+  </div>
+</header>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="relative isolate min-h-[calc(100vh-4rem)]">
+  <img src="{% static 'images/hero-club.jpg' %}" alt="" aria-hidden="true"
+       class="absolute inset-0 -z-10 h-full w-full object-cover opacity-30">
+  <div class="absolute inset-0 -z-10 bg-bg/70"></div>
+  <div class="mx-auto max-w-md px-4 py-10">
+    <div class="rounded-2xl border border-line bg-surface/90 p-6 backdrop-blur sm:p-8">
+      {% block auth_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/auth.js' %}" defer></script>{% endblock %}

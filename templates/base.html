@@ -11,11 +11,12 @@
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body class="min-h-screen bg-bg font-sans text-ink antialiased">
-  {% include "partials/navbar.html" %}
+  {% block navbar %}{% include "partials/navbar.html" %}{% endblock %}
   <main id="top">
     {% block content %}{% endblock %}
   </main>
-  {% include "partials/footer.html" %}
+  {% block footer %}{% include "partials/footer.html" %}{% endblock %}
   <script src="{% static 'js/nav.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

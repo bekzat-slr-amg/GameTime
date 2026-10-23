@@ -1,0 +1,17 @@
+<div>
+  <label for="{{ field.id_for_label }}" class="mb-1.5 block text-sm font-semibold">
+    {{ field.label }}{% if not field.field.required %} <span class="font-normal text-muted">(необязательно)</span>{% endif %}
+  </label>
+  {% if toggle %}
+    <div class="relative">
+      {{ field }}
+      <button type="button" data-toggle-password="{{ field.id_for_label }}"
+              class="absolute inset-y-0 right-2 my-auto h-8 rounded-lg px-3 text-xs font-bold text-muted hover:text-lime">Показать</button>
+    </div>
+  {% else %}
+    {{ field }}
+  {% endif %}
+  {% for error in field.errors %}
+    <p role="alert" class="mt-1.5 text-sm text-red-300">{{ error }}</p>
+  {% endfor %}
+</div>

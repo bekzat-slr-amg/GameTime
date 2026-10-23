@@ -1,0 +1,36 @@
+{% extends "auth_base.html" %}
+{% block title %}Вход — GameTime{% endblock %}
+
+{% block header_link %}
+<div class="flex items-center gap-3 text-sm text-muted">
+  <span class="hidden sm:inline">Нет аккаунта?</span>
+  <a href="{% url 'accounts:register' %}" class="btn-outline !min-h-9 !px-4">Регистрация</a>
+</div>
+{% endblock %}
+
+{% block auth_content %}
+<h1 class="text-center text-2xl font-extrabold">Вход</h1>
+<p class="mt-2 text-center text-sm text-muted">Добро пожаловать! Войдите в свой аккаунт, чтобы продолжить.</p>
+
+<form method="post" class="mt-6 space-y-4" data-submit-once>
+  {% csrf_token %}
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  {% if form.non_field_errors %}
+    <div role="alert" class="rounded-xl border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-300">{{ form.non_field_errors.0 }}</div>
+  {% endif %}
+
+  {% include "partials/form_field.html" with field=form.username %}
+  {% include "partials/form_field.html" with field=form.password toggle=True %}
+
+  <label class="flex items-center gap-2 text-sm text-muted">
+    <input type="checkbox" name="remember_me" class="h-4 w-4 accent-lime" {% if form.remember_me.value %}checked{% endif %}>
+    Запомнить меня
+  </label>
+
+  <button type="submit" class="btn-primary w-full">Войти</button>
+</form>
+
+<p class="mt-6 text-center text-sm text-muted">
+  Нет аккаунта? <a href="{% url 'accounts:register' %}" class="font-bold text-lime hover:underline">Зарегистрироваться</a>
+</p>
+{% endblock %}
