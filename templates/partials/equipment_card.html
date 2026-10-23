@@ -4,17 +4,17 @@
     <img src="{% static item.image %}" alt="{{ item.name }}" loading="lazy" class="h-40 w-full object-cover">
   {% else %}
     <div class="flex h-40 items-center justify-center bg-gradient-to-br from-surface-2 to-bg" role="img" aria-label="Фото появится позже">
-      <span class="text-3xl font-extrabold text-line">{{ item.type }}</span>
+      <span class="text-3xl font-extrabold text-line">{{ item.get_type_display }}</span>
     </div>
   {% endif %}
 
   <div class="flex flex-1 flex-col p-5">
-    <span class="w-fit rounded-md bg-lime px-2 py-0.5 text-xs font-extrabold text-bg">{{ item.type }}</span>
+    <span class="w-fit rounded-md bg-lime px-2 py-0.5 text-xs font-extrabold text-bg">{{ item.get_type_display }}</span>
     <h3 class="mt-3 text-lg font-bold">{{ item.name }}</h3>
-    <p class="text-sm text-muted">{{ item.zone }}</p>
+    <p class="text-sm text-muted">Зона {{ item.zone.name }}</p>
     <ul class="mt-3 space-y-1 text-sm text-muted">
-      {% for spec in item.specs %}<li>{{ spec }}</li>{% endfor %}
+      {% for spec in item.specs_list %}<li>{{ spec }}</li>{% endfor %}
     </ul>
-    <p class="mt-auto pt-4 text-xl font-extrabold text-lime">{{ item.price }} сом<span class="text-sm font-semibold text-muted">/час</span></p>
+    <p class="mt-auto pt-4 text-xl font-extrabold text-lime">{{ item.hourly_rate|floatformat:"-2" }} сом<span class="text-sm font-semibold text-muted">/час</span></p>
   </div>
 </article>

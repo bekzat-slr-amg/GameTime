@@ -37,45 +37,48 @@
 
 <section id="equipment" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-12 sm:px-6">
   <h2 class="border-l-4 border-lime pl-3 text-2xl font-extrabold">Популярное оборудование</h2>
-  <p class="mt-2 text-sm text-muted">Демо-данные: позже здесь будет реальное оборудование из базы.</p>
-  <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    {% for item in equipment %}
-      {% include "partials/equipment_card.html" %}
-    {% endfor %}
-  </div>
+  {% if equipment %}
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {% for item in equipment %}
+        {% include "partials/equipment_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="card mt-6 text-muted">Оборудование скоро появится.</p>
+  {% endif %}
 </section>
 
 <section id="zones" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-12 sm:px-6">
   <h2 class="border-l-4 border-lime pl-3 text-2xl font-extrabold">Зоны клуба</h2>
-  <div class="mt-6 grid gap-4 sm:grid-cols-2">
-    <article class="card">
-      <h3 class="text-xl font-bold">Alpha</h3>
-      <p class="mt-1 text-muted">ПК / Турниры</p>
-    </article>
-    <article class="card">
-      <h3 class="text-xl font-bold">Bravo</h3>
-      <p class="mt-1 text-muted">Консоли / Общая зона</p>
-    </article>
-  </div>
+  {% if zones %}
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      {% for zone in zones %}
+        <article class="card">
+          <h3 class="text-xl font-bold">{{ zone.name }}</h3>
+          <p class="mt-1 text-muted">{{ zone.description }}</p>
+          <p class="mt-3 text-sm font-semibold text-lime">Мест: {{ zone.places }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="card mt-6 text-muted">Зоны скоро появятся.</p>
+  {% endif %}
 </section>
 
 <section id="tariffs" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-12 sm:px-6">
   <h2 class="border-l-4 border-lime pl-3 text-2xl font-extrabold">Тарифы</h2>
-  <p class="mt-2 text-sm text-muted">Демо-значения: итоговые цены будут браться из базы.</p>
-  <div class="mt-6 grid gap-4 sm:grid-cols-3">
-    <div class="card">
-      <p class="text-sm font-bold text-muted">PC</p>
-      <p class="mt-2 text-2xl font-extrabold text-lime">200 сом<span class="text-sm font-semibold text-muted">/час</span></p>
+  {% if tariffs %}
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for tariff in tariffs %}
+        <div class="card">
+          <p class="text-sm font-bold text-muted">{{ tariff.label }}</p>
+          <p class="mt-2 text-2xl font-extrabold text-lime"><span class="text-sm font-semibold text-muted">от </span>{{ tariff.min_rate|floatformat:"-2" }} сом<span class="text-sm font-semibold text-muted">/час</span></p>
+        </div>
+      {% endfor %}
     </div>
-    <div class="card">
-      <p class="text-sm font-bold text-muted">PS5</p>
-      <p class="mt-2 text-2xl font-extrabold text-lime">180 сом<span class="text-sm font-semibold text-muted">/час</span></p>
-    </div>
-    <div class="card">
-      <p class="text-sm font-bold text-muted">VIP</p>
-      <p class="mt-2 text-2xl font-extrabold text-lime">300 сом<span class="text-sm font-semibold text-muted">/час</span></p>
-    </div>
-  </div>
+  {% else %}
+    <p class="card mt-6 text-muted">Тарифы скоро появятся.</p>
+  {% endif %}
 </section>
 
 <section id="contacts" class="mx-auto max-w-7xl scroll-mt-20 px-4 pb-16 sm:px-6">
