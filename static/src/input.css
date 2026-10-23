@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@source "../../templates";
+@source "../../apps";
+
+@theme {
+  --color-bg: #080A09;
+  --color-surface: #111512;
+  --color-surface-2: #171B17;
+  --color-lime: #B6FF4A;
+  --color-teal: #20E6C2;
+  --color-ink: #F5F7F3;
+  --color-muted: #9AA39A;
+  --color-line: #29312A;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-lime px-5 text-sm font-bold text-bg transition-colors hover:bg-lime/85;
+  }
+  .btn-outline {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink transition-colors hover:border-lime hover:text-lime;
+  }
+  .card {
+    @apply rounded-2xl border border-line bg-surface p-5;
+  }
+}

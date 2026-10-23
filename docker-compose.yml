@@ -22,5 +22,14 @@ services:
       db:
         condition: service_healthy
 
+  tailwind:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npx @tailwindcss/cli -i ./static/src/input.css -o ./static/css/styles.css --watch"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+
 volumes:
   postgres_data:
+  node_modules:
