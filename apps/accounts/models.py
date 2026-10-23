@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -34,6 +35,12 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField("Email", unique=True)
+    phone = models.CharField(
+        "Телефон",
+        max_length=20,
+        blank=True,
+        validators=[RegexValidator(r"^\+?[0-9\s\-()]{7,20}$", "Введите корректный номер телефона")],
+    )
     role = models.CharField("Роль", max_length=20, choices=Role.choices, default=Role.CLIENT)
 
     USERNAME_FIELD = "email"
