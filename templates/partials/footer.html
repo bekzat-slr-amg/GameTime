@@ -1,0 +1,12 @@
+﻿<footer class="border-t border-line bg-surface">
+  <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="text-lg font-extrabold">Game<span class="text-lime">Time</span></p>
+      <p class="text-sm text-muted">Больше, чем просто игры.</p>
+    </div>
+    <nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label="Навигация в подвале">
+      {% include "partials/nav_links.html" with link_class="text-sm text-muted transition-colors hover:text-lime" %}
+    </nav>
+    <p class="text-sm text-muted">© {% now "Y" %} GameTime. Все права защищены.</p>
+  </div>
+</footer>
