@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Оборудование — GameTime{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+  <h1 class="text-3xl font-extrabold sm:text-4xl">Оборудование</h1>
+  <p class="mt-2 text-muted">Выбери своё место для игры.</p>
+
+  <form method="get" role="search" class="card mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_12rem_12rem_auto]">
+    <div>
+      <label for="q" class="sr-only">Поиск по названию</label>
+      <input id="q" name="q" type="search" value="{{ q }}" maxlength="80" placeholder="Поиск по названию…" class="input">
+    </div>
+    <div>
+      <label for="type" class="sr-only">Тип</label>
+      <select id="type" name="type" class="input">
+        <option value="">Все типы</option>
+        {% for value, label in types %}
+          <option value="{{ value }}" {% if value == current_type %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="zone" class="sr-only">Зона</label>
+      <select id="zone" name="zone" class="input">
+        <option value="">Все зоны</option>
+        {% for z in zones %}
+          <option value="{{ z.pk }}" {% if z.pk|stringformat:"s" == current_zone %}selected{% endif %}>{{ z.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="btn-primary flex-1">Найти</button>
+      {% if has_filters %}<a href="{% url 'equipment:list' %}" class="btn-outline">Сбросить</a>{% endif %}
+    </div>
+  </form>
+
+  <p class="mt-4 text-sm text-muted">Найдено: {{ paginator.count|default:0 }}</p>
+
+  {% if items %}
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for item in items %}
+        {% include "partials/equipment_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card mt-4 text-center">
+      <p class="font-bold">Ничего не найдено</p>
+      <p class="mt-1 text-sm text-muted">Попробуйте изменить запрос или сбросить фильтры.</p>
+    </div>
+  {% endif %}
+
+  {% if is_paginated %}
+  <nav class="mt-8 flex items-center justify-between gap-4" aria-label="Страницы каталога">
+    {% if page_obj.has_previous %}
+      <a href="?{{ query }}{% if query %}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn-outline">Назад</a>
+    {% else %}
+      <span class="btn-outline pointer-events-none opacity-40" aria-disabled="true">Назад</span>
+    {% endif %}
+    <span class="text-sm text-muted">Страница {{ page_obj.number }} из {{ paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?{{ query }}{% if query %}&{% endif %}page={{ page_obj.next_page_number }}" class="btn-outline">Вперёд</a>
+    {% else %}
+      <span class="btn-outline pointer-events-none opacity-40" aria-disabled="true">Вперёд</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% endblock %}

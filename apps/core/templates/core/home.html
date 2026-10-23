@@ -15,7 +15,7 @@
       Забронируй игровое место онлайн.
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <a href="#equipment" class="btn-primary">Выбрать оборудование</a>
+      <a href="{% url 'equipment:list' %}" class="btn-primary">Выбрать оборудование</a>
     </div>
   </div>
 
@@ -39,6 +39,7 @@
   <h2 class="border-l-4 border-lime pl-3 text-2xl font-extrabold">Популярное оборудование</h2>
   {% if equipment %}
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <a href="{% url 'equipment:list' %}" class="btn-outline mt-6">Весь каталог</a>
       {% for item in equipment %}
         {% include "partials/equipment_card.html" %}
       {% endfor %}
