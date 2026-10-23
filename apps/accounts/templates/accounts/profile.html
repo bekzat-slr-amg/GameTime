@@ -1,0 +1,39 @@
+{% extends "accounts/profile_base.html" %}
+{% block title %}Профиль — GameTime{% endblock %}
+
+{% block profile_content %}
+<h1 class="text-3xl font-extrabold">Профиль</h1>
+<p class="mt-1 text-muted">Управляйте своими данными и настройками.</p>
+
+<section class="card mt-6 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+  {% include "partials/avatar.html" with classes="h-24 w-24 text-3xl" %}
+  <div class="min-w-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <h2 class="text-2xl font-extrabold">{{ user.first_name|default:user.email }}</h2>
+      <span class="rounded-full border border-lime/40 bg-lime/10 px-3 py-0.5 text-xs font-bold text-lime">{{ user.get_role_display }}</span>
+    </div>
+    <p class="mt-2 flex items-center gap-2 break-all text-sm text-muted">{% include "partials/icon.html" with name="mail" size=16 %} {{ user.email }}</p>
+    {% if user.phone %}
+      <p class="mt-1 flex items-center gap-2 text-sm text-muted">{% include "partials/icon.html" with name="phone" size=16 %} {{ user.phone }}</p>
+    {% endif %}
+    <p class="mt-2 text-sm text-muted">С нами с {{ user.date_joined|date:"d.m.Y" }}</p>
+  </div>
+</section>
+
+<section class="card mt-6">
+  <h2 class="text-lg font-bold">Личные данные</h2>
+  <form method="post" class="mt-5 grid gap-4 sm:max-w-lg" data-submit-once>
+    {% csrf_token %}
+    {% include "partials/form_field.html" with field=form.first_name icon="user" %}
+    {% include "partials/form_field.html" with field=form.email icon="mail" %}
+    <p class="-mt-2 text-xs text-muted">Email используется для входа и пока не меняется.</p>
+    {% include "partials/form_field.html" with field=form.phone icon="phone" %}
+    <button type="submit" class="btn-primary w-full sm:w-fit">Сохранить изменения</button>
+  </form>
+</section>
+
+<section class="card mt-6">
+  <h2 class="text-lg font-bold">Недавние бронирования</h2>
+  <p class="mt-2 text-sm text-muted">Здесь появятся ваши брони, когда будет готово бронирование.</p>
+</section>
+{% endblock %}

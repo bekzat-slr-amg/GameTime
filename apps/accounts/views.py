@@ -1,10 +1,12 @@
+from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.views import LoginView
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, ProfileForm, RegisterForm, StyledPasswordChangeForm
 
 
 class RegisterView(CreateView):
@@ -23,7 +25,7 @@ class RegisterView(CreateView):
         return response
 
 
-class SignInView(LoginView):
+class SignInView(auth_views.LoginView):
     authentication_form = LoginForm
     template_name = "accounts/login.html"
     redirect_authenticated_user = True
@@ -33,3 +35,26 @@ class SignInView(LoginView):
         if not form.cleaned_data.get("remember_me"):
             self.request.session.set_expiry(0)  # сессия закончится при закрытии браузера
         return response
+
+
+class ProfileView(LoginRequiredMixin, UpdateView):
+    form_class = ProfileForm
+    template_name = "accounts/profile.html"
+    success_url = reverse_lazy("accounts:profile")
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, "Данные сохранены")
+        return super().form_valid(form)
+
+
+class PasswordChangeView(LoginRequiredMixin, auth_views.PasswordChangeView):
+    form_class = StyledPasswordChangeForm
+    template_name = "accounts/password_change.html"
+    success_url = reverse_lazy("accounts:password")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Пароль изменён")
+        return super().form_valid(form)

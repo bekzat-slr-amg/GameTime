@@ -13,6 +13,7 @@
 <body class="min-h-screen bg-bg font-sans text-ink antialiased">
   {% block navbar %}{% include "partials/navbar.html" %}{% endblock %}
   <main id="top">
+    {% include "partials/messages.html" %}
     {% block content %}{% endblock %}
   </main>
   {% block footer %}{% include "partials/footer.html" %}{% endblock %}

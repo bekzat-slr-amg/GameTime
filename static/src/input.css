@@ -33,6 +33,10 @@
     @apply rounded-2xl border border-line bg-surface p-5;
   }
   .input {
-    @apply min-h-11 w-full rounded-xl border border-line bg-bg px-4 text-sm text-ink placeholder:text-muted/60 focus:border-lime;
+    @apply min-h-11 w-full rounded-xl border border-line bg-bg px-4 text-sm text-ink placeholder:text-muted/60 focus:border-lime disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .icon-glow {
+    color: var(--color-lime);
+    filter: drop-shadow(0 0 5px rgb(182 255 74 / 0.55));
   }
 }

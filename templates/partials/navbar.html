@@ -8,6 +8,7 @@
 
     <div class="flex items-center gap-2">
       {% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="btn-outline hidden md:inline-flex">Профиль</a>
         <form method="post" action="{% url 'accounts:logout' %}" class="hidden md:block">
           {% csrf_token %}
           <button type="submit" class="btn-outline">Выйти</button>
@@ -27,6 +28,7 @@
     <div class="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6">
       {% include "partials/nav_links.html" with link_class="flex min-h-12 items-center text-base font-semibold text-ink" %}
       {% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="flex min-h-12 items-center text-base font-semibold text-ink">Профиль</a>
         <form method="post" action="{% url 'accounts:logout' %}">
           {% csrf_token %}
           <button type="submit" class="flex min-h-12 w-full items-center text-base font-semibold text-lime">Выйти</button>

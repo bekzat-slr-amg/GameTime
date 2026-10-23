@@ -14,11 +14,11 @@
 
 <form method="post" class="mt-6 space-y-4" data-submit-once>
   {% csrf_token %}
-  {% include "partials/form_field.html" with field=form.first_name %}
-  {% include "partials/form_field.html" with field=form.email %}
-  {% include "partials/form_field.html" with field=form.phone %}
-  {% include "partials/form_field.html" with field=form.password1 toggle=True %}
-  {% include "partials/form_field.html" with field=form.password2 toggle=True %}
+  {% include "partials/form_field.html" with field=form.first_name icon="user" %}
+  {% include "partials/form_field.html" with field=form.email icon="mail" %}
+  {% include "partials/form_field.html" with field=form.phone icon="phone" %}
+  {% include "partials/form_field.html" with field=form.password1 toggle=True icon="lock" %}
+  {% include "partials/form_field.html" with field=form.password2 toggle=True icon="lock" %}
 
   <div>
     <label class="flex items-start gap-2 text-sm text-muted">
