@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+﻿from datetime import date, datetime, timedelta
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
@@ -178,7 +178,7 @@ class CreateBookingViewTests(Base, TestCase):
         self.assertEqual(booking.user, self.user)
         self.assertEqual(booking.status, Booking.Status.CONFIRMED)
         self.assertEqual(booking.total_price, Decimal("200.00"))
-        self.assertIn("Бронь подтверждена", messages_of(response)[0])
+        self.assertIn("Бронь подтверждена", messages_of(response)[-1])
 
     def test_price_and_user_from_browser_are_ignored(self):
         self.post(total_price="1", rate_snapshot="1", user=self.other.pk, status="completed")
@@ -194,13 +194,13 @@ class CreateBookingViewTests(Base, TestCase):
                        end_at=datetime(day.year, day.month, day.day, 13, tzinfo=TZ))
         response = self.post(start="12:30")
         self.assertEqual(Booking.objects.count(), 1)
-        self.assertIn("занято", messages_of(response)[0])
+        self.assertIn("занято", messages_of(response)[-1])
 
     def test_double_submit_of_same_form_creates_one_booking(self):
         self.post()
         response = self.post()
         self.assertEqual(Booking.objects.count(), 1)
-        self.assertIn("занято", messages_of(response)[0])
+        self.assertIn("занято", messages_of(response)[-1])
 
     def test_invalid_input_creates_nothing(self):
         cases = [
