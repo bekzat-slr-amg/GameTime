@@ -4,7 +4,7 @@
       Выберите дату от {{ today|date:"d.m.Y" }} до {{ max_day|date:"d.m.Y" }}.
     </p>
   {% else %}
-    <p class="mt-4 text-sm text-muted">Часы работы: {{ opening|time:"H:i" }} – {{ closing|time:"H:i" }}</p>
+    <p class="mt-4 text-sm text-muted">Время начала · клуб работает {{ opening|time:"H:i" }} – {{ closing|time:"H:i" }}</p>
 
     {% if not has_free %}
       <p class="mt-3 rounded-xl border border-line bg-bg p-3 text-sm text-muted">
@@ -14,32 +14,40 @@
 
     <fieldset class="mt-3">
       <legend class="sr-only">Время начала</legend>
-      <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      <div class="grid grid-cols-4 gap-1.5 sm:grid-cols-5">
         {% for slot in slots %}
-          <label class="relative">
-            <input type="radio" name="start" value="{{ slot.label }}" data-end="{{ slot.end_label }}"
-                   class="peer sr-only" {% if slot.state != "free" %}disabled{% endif %}>
-            <span class="flex min-h-12 flex-col items-center justify-center rounded-xl border border-line bg-bg px-2 text-sm font-bold
-                         peer-checked:border-lime peer-checked:bg-lime peer-checked:text-bg
-                         peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-lime
-                         peer-disabled:cursor-not-allowed peer-disabled:opacity-50
-                         {% if slot.state == 'free' %}cursor-pointer hover:border-lime{% endif %}">
-              <span class="{% if slot.state != 'free' %}text-muted line-through{% endif %}">{{ slot.label }}</span>
-              {% if slot.state == "busy" %}<span class="text-[10px] font-semibold text-muted">Занято</span>
-              {% elif slot.state == "past" %}<span class="text-[10px] font-semibold text-muted">Прошло</span>
-              {% elif slot.state == "outside" %}<span class="text-[10px] font-semibold text-muted">Не вмещается</span>
-              {% endif %}
-            </span>
-          </label>
+          {% if slot.state != "past" %}
+            <label>
+              <input type="radio" name="start" value="{{ slot.label }}" data-end="{{ slot.end_label }}"
+                     class="peer sr-only" {% if slot.state != "free" %}disabled{% endif %}>
+              <span class="flex h-10 items-center justify-center rounded-lg border border-line bg-bg text-sm font-bold
+                           peer-checked:border-lime peer-checked:bg-lime peer-checked:text-bg
+                           peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-lime
+                           peer-disabled:cursor-not-allowed peer-disabled:opacity-40
+                           {% if slot.state == 'free' %}cursor-pointer hover:border-lime{% else %}text-muted line-through{% endif %}">
+                {{ slot.label }}
+                {% if slot.state == "busy" %}<span class="sr-only"> Занято</span>
+                {% elif slot.state == "outside" %}<span class="sr-only"> Не вмещается до закрытия</span>{% endif %}
+              </span>
+            </label>
+          {% endif %}
         {% endfor %}
       </div>
     </fieldset>
+    <p class="mt-2 text-xs text-muted">Зачёркнутое время недоступно: занято или не вмещается до закрытия. Прошедшее время не показывается.</p>
   {% endif %}
 
   <div class="mt-4 rounded-xl border border-line bg-bg p-4">
-    <p class="text-sm text-muted">Предварительная стоимость</p>
-    <p class="text-2xl font-extrabold text-lime">{{ price|floatformat:"-2" }} сом</p>
-    <p id="booking-summary" class="mt-1 text-sm text-muted">Выберите время начала.</p>
+    <div class="flex items-end justify-between gap-3">
+      <div>
+        <p class="text-xs text-muted">Вы выбрали</p>
+        <p id="booking-summary" class="text-base font-bold text-muted">Время не выбрано</p>
+      </div>
+      <div class="text-right">
+        <p class="text-xs text-muted">Стоимость</p>
+        <p class="text-2xl font-extrabold text-lime">{{ price|floatformat:"-2" }} сом</p>
+      </div>
+    </div>
   </div>
 
   {% if user.is_authenticated %}

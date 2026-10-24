@@ -3,15 +3,25 @@ const form = document.getElementById("booking-form");
 if (form) {
   const dateInput = form.querySelector('input[name="date"]');
 
-  // Выбор слота: показываем итог и включаем кнопку.
+  // Выбор слота: крупно показываем выбранное время и включаем кнопку.
   form.addEventListener("change", (event) => {
     const slot = event.target;
     if (!(slot instanceof HTMLInputElement) || slot.name !== "start") return;
+
     const summary = document.getElementById("booking-summary");
     const submit = document.getElementById("booking-submit");
     const [year, month, day] = dateInput.value.split("-");
-    if (summary) summary.textContent = `${day}.${month}.${year}, ${slot.value}–${slot.dataset.end}`;
-    if (submit) submit.disabled = false;
+    const range = `${slot.value}–${slot.dataset.end}`;
+
+    if (summary) {
+      summary.textContent = `${day}.${month}.${year}, ${range}`;
+      summary.classList.remove("text-muted");
+      summary.classList.add("text-lime");
+    }
+    if (submit) {
+      submit.disabled = false;
+      submit.textContent = `Забронировать ${range}`;
+    }
   });
 
   // Защита от двойной отправки.
