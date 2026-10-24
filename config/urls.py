@@ -8,6 +8,7 @@ urlpatterns = [
     path("", include("apps.core.urls")),
     path("accounts/", include("apps.accounts.urls")),
     path("equipment/", include("apps.equipment.urls")),
+    path("bookings/", include("apps.bookings.urls")),
 ]
 
 if settings.DEBUG:

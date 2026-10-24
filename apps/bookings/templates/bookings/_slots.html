@@ -1,0 +1,51 @@
+<div id="slots-box" aria-live="polite">
+  {% if not day_valid %}
+    <p role="alert" class="mt-4 rounded-xl border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-300">
+      Выберите дату от {{ today|date:"d.m.Y" }} до {{ max_day|date:"d.m.Y" }}.
+    </p>
+  {% else %}
+    <p class="mt-4 text-sm text-muted">Часы работы: {{ opening|time:"H:i" }} – {{ closing|time:"H:i" }}</p>
+
+    {% if not has_free %}
+      <p class="mt-3 rounded-xl border border-line bg-bg p-3 text-sm text-muted">
+        На эту дату и продолжительность свободного времени нет. Выберите другую дату или время.
+      </p>
+    {% endif %}
+
+    <fieldset class="mt-3">
+      <legend class="sr-only">Время начала</legend>
+      <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+        {% for slot in slots %}
+          <label class="relative">
+            <input type="radio" name="start" value="{{ slot.label }}" data-end="{{ slot.end_label }}"
+                   class="peer sr-only" {% if slot.state != "free" %}disabled{% endif %}>
+            <span class="flex min-h-12 flex-col items-center justify-center rounded-xl border border-line bg-bg px-2 text-sm font-bold
+                         peer-checked:border-lime peer-checked:bg-lime peer-checked:text-bg
+                         peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-lime
+                         peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+                         {% if slot.state == 'free' %}cursor-pointer hover:border-lime{% endif %}">
+              <span class="{% if slot.state != 'free' %}text-muted line-through{% endif %}">{{ slot.label }}</span>
+              {% if slot.state == "busy" %}<span class="text-[10px] font-semibold text-muted">Занято</span>
+              {% elif slot.state == "past" %}<span class="text-[10px] font-semibold text-muted">Прошло</span>
+              {% elif slot.state == "outside" %}<span class="text-[10px] font-semibold text-muted">Не вмещается</span>
+              {% endif %}
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+  {% endif %}
+
+  <div class="mt-4 rounded-xl border border-line bg-bg p-4">
+    <p class="text-sm text-muted">Предварительная стоимость</p>
+    <p class="text-2xl font-extrabold text-lime">{{ price|floatformat:"-2" }} сом</p>
+    <p id="booking-summary" class="mt-1 text-sm text-muted">Выберите время начала.</p>
+  </div>
+
+  {% if user.is_authenticated %}
+    <button id="booking-submit" type="submit" disabled
+            class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-50">Забронировать</button>
+  {% else %}
+    <a href="{% url 'accounts:login' %}?next={% url 'equipment:detail' item.pk %}" class="btn-primary mt-4 w-full">Войдите, чтобы забронировать</a>
+  {% endif %}
+</div>

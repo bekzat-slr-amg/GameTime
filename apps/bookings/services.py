@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.db import IntegrityError, transaction
@@ -9,15 +9,22 @@ from apps.equipment.models import Equipment
 from .models import BLOCKING_STATUSES, Booking, ClubSettings
 
 STEP = timedelta(minutes=30)
+MAX_DAYS_AHEAD = 30
+DURATION_CHOICES = [(30, "30 мин"), (60, "1 час"), (90, "1 ч 30 мин"), (120, "2 часа")]
+DURATIONS = [minutes for minutes, _ in DURATION_CHOICES]
+DEFAULT_DURATION = 60
 
 
 class BookingError(Exception):
     """Нарушено правило бронирования. Текст можно показывать пользователю."""
 
 
+def price_for_minutes(rate, minutes):
+    return (rate * Decimal(minutes) / Decimal(60)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
 def calc_price(rate, start_at, end_at):
-    minutes = Decimal((end_at - start_at) // timedelta(minutes=1))
-    return (rate * minutes / Decimal(60)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return price_for_minutes(rate, (end_at - start_at) // timedelta(minutes=1))
 
 
 def has_overlap(equipment, start_at, end_at):
@@ -52,6 +59,8 @@ def validate_interval(start_at, end_at, club, now):
         raise BookingError("Начало должно быть на границе получаса (например, 12:00 или 12:30).")
     if local_start.date() != local_end.date():
         raise BookingError("Бронь не может переходить через полночь.")
+    if local_start.date() > now.astimezone(tz).date() + timedelta(days=MAX_DAYS_AHEAD):
+        raise BookingError(f"Бронь возможна не более чем на {MAX_DAYS_AHEAD} дней вперёд.")
     if local_start.time() < club.opening_time or local_end.time() > club.closing_time:
         raise BookingError(
             f"Клуб работает с {club.opening_time:%H:%M} до {club.closing_time:%H:%M}."
@@ -93,3 +102,80 @@ def create_booking(*, user, equipment_id, start_at, end_at, now=None):
     except IntegrityError:
         # Последняя линия защиты: сработало ограничение PostgreSQL на пересечение.
         raise BookingError("Это время уже занято. Выберите другой интервал.")
+
+
+# ---- Выбор времени на странице устройства ----
+
+def parse_day(value, club, now):
+    """Дата из формы: не раньше сегодняшней (по часам клуба) и не дальше MAX_DAYS_AHEAD."""
+    try:
+        day = date.fromisoformat(value or "")
+    except ValueError:
+        return None
+    today = now.astimezone(club.tzinfo).date()
+    if day < today or day > today + timedelta(days=MAX_DAYS_AHEAD):
+        return None
+    return day
+
+
+def parse_duration(value):
+    try:
+        minutes = int(value)
+    except (TypeError, ValueError):
+        return DEFAULT_DURATION
+    return minutes if minutes in DURATIONS else DEFAULT_DURATION
+
+
+def day_slots(equipment, day, duration_minutes, now=None):
+    """Слоты начала брони на день. state: free / busy / past / outside."""
+    now = now or timezone.now()
+    club = ClubSettings.load()
+    tz = club.tzinfo
+    duration = timedelta(minutes=duration_minutes)
+    opens = datetime.combine(day, club.opening_time, tzinfo=tz)
+    closes = datetime.combine(day, club.closing_time, tzinfo=tz)
+
+    busy = list(
+        Booking.objects.filter(
+            equipment=equipment, status__in=BLOCKING_STATUSES, start_at__lt=closes, end_at__gt=opens
+        ).values_list("start_at", "end_at")
+    )
+
+    slots = []
+    start = opens
+    while start + STEP <= closes:
+        end = start + duration
+        if start <= now:
+            state = "past"
+        elif end > closes:
+            state = "outside"
+        elif any(start < b_end and end > b_start for b_start, b_end in busy):
+            state = "busy"
+        else:
+            state = "free"
+        slots.append({"label": start.strftime("%H:%M"), "end_label": end.strftime("%H:%M"), "state": state})
+        start += STEP
+    return slots
+
+
+def slots_context(equipment, day_value, duration_value, now=None):
+    now = now or timezone.now()
+    club = ClubSettings.load()
+    today = now.astimezone(club.tzinfo).date()
+    duration = parse_duration(duration_value)
+    day = parse_day(day_value, club, now) if day_value else today
+
+    slots = day_slots(equipment, day, duration, now=now) if day is not None else []
+    return {
+        "today": today,
+        "max_day": today + timedelta(days=MAX_DAYS_AHEAD),
+        "day": day or today,
+        "day_valid": day is not None,
+        "duration": duration,
+        "durations": DURATION_CHOICES,
+        "opening": club.opening_time,
+        "closing": club.closing_time,
+        "price": price_for_minutes(equipment.hourly_rate, duration),
+        "slots": slots,
+        "has_free": any(slot["state"] == "free" for slot in slots),
+    }

@@ -7,7 +7,7 @@
   <a href="{% url 'equipment:list' %}" class="text-sm font-semibold text-muted hover:text-lime">← Назад к каталогу</a>
 
   <div class="mt-4 grid gap-6 lg:grid-cols-2">
-    <div class="overflow-hidden rounded-2xl border border-line self-start~~">
+    <div class="self-start overflow-hidden rounded-2xl border border-line">
       {% if item.image %}
         <img src="{% static item.image %}" alt="{{ item.name }}" class="h-full max-h-96 w-full object-cover">
       {% else %}
@@ -33,11 +33,44 @@
 
       <p class="mt-6 text-3xl font-extrabold text-lime">{{ item.hourly_rate|floatformat:"-2" }} сом<span class="text-base font-semibold text-muted">/час</span></p>
 
-      <section class="card mt-6">
-        <h2 class="font-bold">Бронирование</h2>
-        <p class="mt-1 text-sm text-muted">Выбор даты и времени появится на следующем этапе разработки.</p>
+      <section class="card mt-6" aria-labelledby="booking-title">
+        <h2 id="booking-title" class="text-lg font-bold">Бронирование</h2>
+
+        <form id="booking-form" method="post" action="{% url 'bookings:create' %}" class="mt-4">
+          {% csrf_token %}
+          <input type="hidden" name="equipment" value="{{ item.pk }}">
+
+          <div hx-get="{% url 'equipment:slots' item.pk %}" hx-trigger="change"
+               hx-target="#slots-box" hx-swap="outerHTML"
+               hx-include="[name='date'],[name='duration']">
+            <label for="date" class="mb-1.5 block text-sm font-semibold">Дата</label>
+            <input id="date" type="date" name="date" value="{{ day|date:'Y-m-d' }}"
+                   min="{{ today|date:'Y-m-d' }}" max="{{ max_day|date:'Y-m-d' }}" required class="input sm:max-w-xs">
+
+            <fieldset class="mt-4">
+              <legend class="mb-2 text-sm font-semibold">Продолжительность</legend>
+              <div class="flex flex-wrap gap-2">
+                {% for minutes, label in durations %}
+                  <label>
+                    <input type="radio" name="duration" value="{{ minutes }}" class="peer sr-only" {% if minutes == duration %}checked{% endif %}>
+                    <span class="flex min-h-11 cursor-pointer items-center rounded-xl border border-line px-4 text-sm font-bold
+                                 peer-checked:border-lime peer-checked:bg-lime/10 peer-checked:text-lime
+                                 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-lime">{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+          </div>
+
+          {% include "bookings/_slots.html" %}
+        </form>
       </section>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/htmx.min.js' %}" defer></script>
+<script src="{% static 'js/booking.js' %}" defer></script>
 {% endblock %}

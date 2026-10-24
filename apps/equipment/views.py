@@ -1,5 +1,5 @@
 from django.views.generic import DetailView, ListView
-
+from apps.bookings.services import slots_context
 from .models import Equipment, Zone
 
 
@@ -53,3 +53,10 @@ class EquipmentDetailView(DetailView):
 
     def get_queryset(self):
         return visible_equipment()
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(slots_context(
+            self.object, self.request.GET.get("date"), self.request.GET.get("duration")
+        ))
+        return ctx
