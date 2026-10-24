@@ -14,17 +14,17 @@
 
     <fieldset class="mt-3">
       <legend class="sr-only">Время начала</legend>
-      <div class="grid grid-cols-4 gap-1.5 sm:grid-cols-5">
+      <div class="grid grid-cols-4 gap-2">
         {% for slot in slots %}
           {% if slot.state != "past" %}
             <label>
               <input type="radio" name="start" value="{{ slot.label }}" data-end="{{ slot.end_label }}"
                      class="peer sr-only" {% if slot.state != "free" %}disabled{% endif %}>
-              <span class="flex h-10 items-center justify-center rounded-lg border border-line bg-bg text-sm font-bold
-                           peer-checked:border-lime peer-checked:bg-lime peer-checked:text-bg
+              <span class="flex h-12 items-center justify-center rounded-xl border border-line bg-bg text-base font-bold transition
+                           peer-checked:border-lime peer-checked:bg-lime peer-checked:text-bg peer-checked:shadow-[0_0_16px_rgb(182_255_74/0.5)]
                            peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-lime
                            peer-disabled:cursor-not-allowed peer-disabled:opacity-40
-                           {% if slot.state == 'free' %}cursor-pointer hover:border-lime{% else %}text-muted line-through{% endif %}">
+                           {% if slot.state == 'free' %}cursor-pointer hover:border-lime hover:text-lime hover:shadow-[0_0_14px_rgb(182_255_74/0.45)]{% else %}text-muted line-through{% endif %}">
                 {{ slot.label }}
                 {% if slot.state == "busy" %}<span class="sr-only"> Занято</span>
                 {% elif slot.state == "outside" %}<span class="sr-only"> Не вмещается до закрытия</span>{% endif %}
