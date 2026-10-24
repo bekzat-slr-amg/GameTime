@@ -1,4 +1,4 @@
-from django.http import Http404
+﻿from django.http import Http404
 from django.views.generic import DetailView, ListView
 from .models import Booking
 from datetime import datetime, time, timedelta
@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -158,6 +159,7 @@ class BookingDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         booking = self.object
+        ctx["now"] = timezone.now()
         ctx["can_cancel"] = booking.status == Booking.Status.CONFIRMED and booking.start_at > timezone.now()
         return ctx
 

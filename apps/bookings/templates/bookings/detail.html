@@ -1,11 +1,11 @@
-{% extends "accounts/profile_base.html" %}
+﻿{% extends "accounts/profile_base.html" %}
 {% block title %}Бронь №{{ booking.pk }} — GameTime{% endblock %}
 
 {% block profile_content %}
 <a href="{% url 'bookings:mine' %}" class="text-sm font-semibold text-muted hover:text-lime">← Мои брони</a>
 <div class="mt-3 flex flex-wrap items-center gap-3">
   <h1 class="text-3xl font-extrabold">Бронь №{{ booking.pk }}</h1>
-  {% include "partials/booking_status.html" with now=booking.updated_at %}
+  {% include "partials/booking_status.html" %}
 </div>
 
 <dl class="card mt-5 grid gap-4 sm:grid-cols-2">
