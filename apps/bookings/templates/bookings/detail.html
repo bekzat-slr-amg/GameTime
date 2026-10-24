@@ -1,0 +1,36 @@
+{% extends "accounts/profile_base.html" %}
+{% block title %}Бронь №{{ booking.pk }} — GameTime{% endblock %}
+
+{% block profile_content %}
+<a href="{% url 'bookings:mine' %}" class="text-sm font-semibold text-muted hover:text-lime">← Мои брони</a>
+<div class="mt-3 flex flex-wrap items-center gap-3">
+  <h1 class="text-3xl font-extrabold">Бронь №{{ booking.pk }}</h1>
+  {% include "partials/booking_status.html" with now=booking.updated_at %}
+</div>
+
+<dl class="card mt-5 grid gap-4 sm:grid-cols-2">
+  <div><dt class="text-sm text-muted">Оборудование</dt><dd class="font-bold">{{ booking.equipment.name }}</dd></div>
+  <div><dt class="text-sm text-muted">Зона</dt><dd class="font-bold">{{ booking.equipment.zone.name }}</dd></div>
+  <div><dt class="text-sm text-muted">Дата</dt><dd class="font-bold">{{ booking.start_at|date:"d.m.Y" }}</dd></div>
+  <div><dt class="text-sm text-muted">Время</dt><dd class="font-bold">{{ booking.start_at|time:"H:i" }}–{{ booking.end_at|time:"H:i" }}</dd></div>
+  <div><dt class="text-sm text-muted">Тариф на момент брони</dt><dd class="font-bold">{{ booking.rate_snapshot|floatformat:"-2" }} сом/час</dd></div>
+  <div><dt class="text-sm text-muted">Сумма</dt><dd class="text-xl font-extrabold text-lime">{{ booking.total_price|floatformat:"-2" }} сом</dd></div>
+</dl>
+
+{% if can_cancel %}
+  <form method="post" action="{% url 'bookings:cancel' booking.pk %}" class="mt-5" data-confirm="Отменить эту бронь? Время снова станет доступно другим.">
+    {% csrf_token %}
+    <button type="submit" class="btn-outline !border-red-400/50 !text-red-300 hover:!bg-red-400/10">Отменить бронь</button>
+  </form>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll("form[data-confirm]").forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+    });
+  });
+</script>
+{% endblock %}

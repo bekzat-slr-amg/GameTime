@@ -11,9 +11,9 @@
       <p class="break-all text-sm text-muted">{{ user.email }}</p>
     </div>
     <nav class="card !p-2" aria-label="Разделы профиля">
-      <a href="{% url 'accounts:profile' %}" {% if current == 'profile' %}aria-current="page"{% endif %}
-         class="flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm font-bold {% if current == 'profile' %}border-lime/40 bg-lime/10 text-lime{% else %}border-transparent text-ink hover:bg-surface-2{% endif %}">
-        {% include "partials/icon.html" with name="user" size=18 %} Мой профиль
+      <a href="{% url 'bookings:mine' %}" {% if request.resolver_match.namespace == 'bookings' %}aria-current="page"{% endif %}
+         class="mt-1 flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm font-bold {% if request.resolver_match.namespace == 'bookings' %}border-lime/40 bg-lime/10 text-lime{% else %}border-transparent text-ink hover:bg-surface-2{% endif %}">
+        {% include "partials/icon.html" with name="clock" size=18 %} Мои брони
       </a>
       <a href="{% url 'accounts:password' %}" {% if current == 'password' %}aria-current="page"{% endif %}
          class="mt-1 flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm font-bold {% if current == 'password' %}border-lime/40 bg-lime/10 text-lime{% else %}border-transparent text-ink hover:bg-surface-2{% endif %}">

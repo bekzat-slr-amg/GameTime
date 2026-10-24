@@ -179,3 +179,21 @@ def slots_context(equipment, day_value, duration_value, now=None):
         "slots": slots,
         "has_free": any(slot["state"] == "free" for slot in slots),
     }
+
+def cancel_booking(*, booking_id, user, now=None):
+    """Отмена своей брони до начала. Чужая бронь не находится (как будто её нет)."""
+    now = now or timezone.now()
+    with transaction.atomic():
+        try:
+            booking = Booking.objects.select_for_update().get(pk=booking_id, user=user)
+        except Booking.DoesNotExist:
+            raise BookingError("Бронь не найдена.")
+
+        if booking.status != Booking.Status.CONFIRMED:
+            raise BookingError("Эту бронь уже нельзя отменить.")
+        if booking.start_at <= now:
+            raise BookingError("Сеанс уже начался, отмена невозможна.")
+
+        booking.status = Booking.Status.CANCELLED
+        booking.save(update_fields=["status", "updated_at"])
+        return booking
