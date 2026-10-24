@@ -7,7 +7,7 @@
   <a href="{% url 'equipment:list' %}" class="text-sm font-semibold text-muted hover:text-lime">← Назад к каталогу</a>
 
   <div class="mt-4 grid gap-6 lg:grid-cols-2">
-    <div class="overflow-hidden rounded-2xl border border-line">
+    <div class="overflow-hidden rounded-2xl border border-line self-start~~">
       {% if item.image %}
         <img src="{% static item.image %}" alt="{{ item.name }}" class="h-full max-h-96 w-full object-cover">
       {% else %}
