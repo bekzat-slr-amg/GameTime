@@ -197,3 +197,56 @@ def cancel_booking(*, booking_id, user, now=None):
         booking.status = Booking.Status.CANCELLED
         booking.save(update_fields=["status", "updated_at"])
         return booking
+
+# ---- Действия администратора клуба ----
+
+START_EARLY = timedelta(minutes=15)
+
+ACTION_ERRORS = {
+    "start": "Сеанс сейчас нельзя начать: бронь должна быть подтверждена, а время — не раньше чем за 15 минут до начала и не позже окончания.",
+    "finish": "Завершить можно только начатый сеанс.",
+    "no_show": "Неявку можно отметить только у подтверждённой брони после времени её начала.",
+}
+
+
+def allowed_actions(booking, now):
+    """Какие действия администратора допустимы для брони прямо сейчас."""
+    actions = []
+    if booking.status == Booking.Status.CONFIRMED:
+        if booking.start_at - START_EARLY <= now < booking.end_at:
+            actions.append("start")
+        if now >= booking.start_at:
+            actions.append("no_show")
+    elif booking.status == Booking.Status.IN_PROGRESS:
+        actions.append("finish")
+    return actions
+
+
+def _transition(booking_id, action, new_status, now):
+    now = now or timezone.now()
+    with transaction.atomic():
+        try:
+            booking = (
+                Booking.objects.select_for_update(of=("self",))
+                .select_related("equipment")
+                .get(pk=booking_id)
+            )
+        except Booking.DoesNotExist:
+            raise BookingError("Бронь не найдена.")
+        if action not in allowed_actions(booking, now):
+            raise BookingError(ACTION_ERRORS[action])
+        booking.status = new_status
+        booking.save(update_fields=["status", "updated_at"])
+        return booking
+
+
+def start_session(*, booking_id, now=None):
+    return _transition(booking_id, "start", Booking.Status.IN_PROGRESS, now)
+
+
+def finish_session(*, booking_id, now=None):
+    return _transition(booking_id, "finish", Booking.Status.COMPLETED, now)
+
+
+def mark_no_show(*, booking_id, now=None):
+    return _transition(booking_id, "no_show", Booking.Status.NO_SHOW, now)

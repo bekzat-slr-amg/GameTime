@@ -1,0 +1,10 @@
+﻿{% extends "base.html" %}
+{% block title %}Страница не найдена — GameTime{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-lg px-4 py-20 text-center">
+  <p class="text-6xl font-extrabold text-lime">404</p>
+  <h1 class="mt-4 text-2xl font-extrabold">Страница не найдена</h1>
+  <p class="mt-2 text-muted">Возможно, вы перешли по неверной ссылке или страница была удалена.</p>
+  <a href="{% url 'core:home' %}" class="btn-primary mt-6">На главную</a>
+</section>
+{% endblock %}

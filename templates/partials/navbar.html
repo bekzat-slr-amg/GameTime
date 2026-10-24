@@ -8,6 +8,7 @@
 
     <div class="flex items-center gap-2">
       {% if user.is_authenticated %}
+      {% if user.is_club_admin %}<a href="{% url 'club:dashboard' %}" class="btn-outline hidden md:inline-flex">Панель клуба</a>{% endif %}
         <a href="{% url 'bookings:mine' %}" class="btn-outline hidden md:inline-flex">Мои брони</a>
         <a href="{% url 'accounts:profile' %}" class="btn-outline hidden md:inline-flex">Профиль</a>
         <form method="post" action="{% url 'accounts:logout' %}" class="hidden md:block">
@@ -31,6 +32,7 @@
       {% if user.is_authenticated %}
         <a href="{% url 'bookings:mine' %}" class="flex min-h-12 items-center text-base font-semibold text-ink">Мои брони</a>
         <a href="{% url 'accounts:profile' %}" class="flex min-h-12 items-center text-base font-semibold text-ink">Профиль</a>
+        {% if user.is_club_admin %}<a href="{% url 'club:dashboard' %}" class="flex min-h-12 items-center text-base font-semibold text-lime">Панель клуба</a>{% endif %}
         <form method="post" action="{% url 'accounts:logout' %}">
           {% csrf_token %}
           <button type="submit" class="flex min-h-12 w-full items-center text-base font-semibold text-lime">Выйти</button>

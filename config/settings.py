@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.equipment",
     "apps.bookings",
+    "apps.club",
 ]
 
 MIDDLEWARE = [

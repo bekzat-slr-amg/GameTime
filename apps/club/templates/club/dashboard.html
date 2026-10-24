@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Панель клуба — GameTime{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+  <h1 class="text-3xl font-extrabold">Панель клуба</h1>
+  <p class="mt-1 text-muted">{{ day|date:"j E Y" }}</p>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-3">
+    <div class="card">
+      <p class="text-sm text-muted">Броней за день</p>
+      <p class="mt-1 text-3xl font-extrabold">{{ stats.count }}</p>
+      <p class="mt-1 text-xs text-muted">без отменённых и неявок</p>
+    </div>
+    <div class="card">
+      <p class="text-sm text-muted">Занятые часы</p>
+      <p class="mt-1 text-3xl font-extrabold">{{ stats.hours|floatformat:"-1" }}</p>
+      <p class="mt-1 text-xs text-muted">по тем же броням</p>
+    </div>
+    <div class="card">
+      <p class="text-sm text-muted">Выручка</p>
+      <p class="mt-1 text-3xl font-extrabold text-lime">{{ stats.revenue|floatformat:"-2" }} сом</p>
+      <p class="mt-1 text-xs text-muted">завершённые сеансы</p>
+    </div>
+  </div>
+
+  <div class="mt-6 flex flex-wrap items-center gap-2">
+    <a href="?date={{ prev_day|date:'Y-m-d' }}{% if filter_query %}&{{ filter_query }}{% endif %}" class="btn-outline !px-4" aria-label="Предыдущий день">←</a>
+    <a href="?date={{ today|date:'Y-m-d' }}{% if filter_query %}&{{ filter_query }}{% endif %}" class="btn-outline">Сегодня</a>
+    <a href="?date={{ next_day|date:'Y-m-d' }}{% if filter_query %}&{{ filter_query }}{% endif %}" class="btn-outline !px-4" aria-label="Следующий день">→</a>
+  </div>
+
+  <form method="get" class="card mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-[12rem_1fr_1fr_auto]">
+    <div>
+      <label for="date" class="sr-only">Дата</label>
+      <input id="date" type="date" name="date" value="{{ day|date:'Y-m-d' }}" class="input">
+    </div>
+    <div>
+      <label for="status" class="sr-only">Статус</label>
+      <select id="status" name="status" class="input">
+        <option value="">Все статусы</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="zone" class="sr-only">Зона</label>
+      <select id="zone" name="zone" class="input">
+        <option value="">Все зоны</option>
+        {% for z in zones %}
+          <option value="{{ z.pk }}" {% if z.pk|stringformat:"s" == current_zone %}selected{% endif %}>{{ z.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Показать</button>
+  </form>
+
+  {% if bookings %}
+    <div class="card mt-4 overflow-x-auto !p-0">
+      <table class="w-full min-w-[44rem] text-left text-sm">
+        <thead class="border-b border-line text-muted">
+          <tr>
+            <th scope="col" class="px-4 py-3 font-semibold">Время</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Оборудование</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Клиент</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Статус</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Сумма</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+            <tr class="border-b border-line last:border-0">
+              <td class="whitespace-nowrap px-4 py-3 font-bold">{{ b.start_at|time:"H:i" }}–{{ b.end_at|time:"H:i" }}</td>
+              <td class="px-4 py-3">{{ b.equipment.name }}<span class="block text-xs text-muted">Зона {{ b.equipment.zone.name }}</span></td>
+              <td class="px-4 py-3">{{ b.user.first_name|default:b.user.email }}<span class="block break-all text-xs text-muted">{{ b.user.email }}</span></td>
+              <td class="px-4 py-3">
+                {% if b.status == "confirmed" %}<span class="rounded-full border border-lime/40 bg-lime/10 px-3 py-0.5 text-xs font-bold text-lime">Подтверждена</span>
+                {% elif b.status == "in_progress" %}<span class="rounded-full border border-teal/40 bg-teal/10 px-3 py-0.5 text-xs font-bold text-teal">Идёт</span>
+                {% elif b.status == "completed" %}<span class="rounded-full border border-line bg-surface-2 px-3 py-0.5 text-xs font-bold text-muted">Завершена</span>
+                {% elif b.status == "cancelled" %}<span class="rounded-full border border-red-400/40 bg-red-400/10 px-3 py-0.5 text-xs font-bold text-red-300">Отменена</span>
+                {% else %}<span class="rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-0.5 text-xs font-bold text-amber-300">Неявка</span>{% endif %}
+              </td>
+              <td class="whitespace-nowrap px-4 py-3 font-bold text-lime">{{ b.total_price|floatformat:"-2" }} сом</td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-2">
+                  {% if "start" in b.actions %}
+                    <form method="post" action="{% url 'club:start' b.pk %}">
+                      {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button type="submit" class="btn-primary !min-h-9 !px-3">Начать</button>
+                    </form>
+                  {% endif %}
+                  {% if "finish" in b.actions %}
+                    <form method="post" action="{% url 'club:finish' b.pk %}">
+                      {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button type="submit" class="btn-primary !min-h-9 !px-3">Завершить</button>
+                    </form>
+                  {% endif %}
+                  {% if "no_show" in b.actions %}
+                    <form method="post" action="{% url 'club:no_show' b.pk %}" data-confirm="Отметить неявку? Время освободится для других клиентов.">
+                      {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button type="submit" class="btn-outline !min-h-9 !px-3">Неявка</button>
+                    </form>
+                  {% endif %}
+                  {% if not b.actions %}<span class="text-muted">—</span>{% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="mt-6 flex items-center justify-between gap-4" aria-label="Страницы">
+      {% if page_obj.has_previous %}
+        <a href="?{{ page_query }}&page={{ page_obj.previous_page_number }}" class="btn-outline">Назад</a>
+      {% else %}<span class="btn-outline pointer-events-none opacity-40" aria-disabled="true">Назад</span>{% endif %}
+      <span class="text-sm text-muted">Страница {{ page_obj.number }} из {{ paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?{{ page_query }}&page={{ page_obj.next_page_number }}" class="btn-outline">Вперёд</a>
+      {% else %}<span class="btn-outline pointer-events-none opacity-40" aria-disabled="true">Вперёд</span>{% endif %}
+    </nav>
+    {% endif %}
+  {% else %}
+    <div class="card mt-4 text-center">
+      <p class="font-bold">Броней не найдено</p>
+      <p class="mt-1 text-sm text-muted">На эту дату с такими фильтрами броней нет.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/confirm.js' %}" defer></script>{% endblock %}
