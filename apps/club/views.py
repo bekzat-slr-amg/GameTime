@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+﻿from datetime import date, datetime, time, timedelta
 from urllib.parse import urlencode
 
 from django.contrib import messages
@@ -103,6 +103,7 @@ class DashboardView(ClubAdminRequiredMixin, ListView):
 
         ctx.update({
             "bookings": rows,
+            "now": now,
             "day": self.day,
             "today": self.today,
             "prev_day": self.day - timedelta(days=1),

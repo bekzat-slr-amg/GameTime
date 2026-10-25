@@ -1,8 +1,8 @@
-{% if booking.status == "confirmed" %}
+﻿{% if booking.status == "confirmed" %}
   {% if booking.start_at <= now and booking.end_at > now %}
     <span class="rounded-full border border-teal/40 bg-teal/10 px-3 py-0.5 text-xs font-bold text-teal">Идёт</span>
   {% elif booking.end_at <= now %}
-    <span class="rounded-full border border-line bg-surface-2 px-3 py-0.5 text-xs font-bold text-muted">Завершена</span>
+    <span class="rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-0.5 text-xs font-bold text-amber-300">Ожидает отметки клуба</span>
   {% else %}
     <span class="rounded-full border border-lime/40 bg-lime/10 px-3 py-0.5 text-xs font-bold text-lime">Подтверждена</span>
   {% endif %}

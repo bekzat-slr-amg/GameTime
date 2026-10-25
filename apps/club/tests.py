@@ -110,11 +110,9 @@ class TransitionTests(Base, TestCase):
         services.start_session(booking_id=self.booking.pk, now=at(11, 45))
         self.assertEqual(self.status(), Booking.Status.IN_PROGRESS)
 
-    def test_start_after_end_is_rejected(self):
-        with self.assertRaises(BookingError):
-            services.start_session(booking_id=self.booking.pk, now=at(13))
-        self.assertEqual(self.status(), Booking.Status.CONFIRMED)
-
+    def test_start_after_end_is_allowed_for_late_marking(self):
+        services.start_session(booking_id=self.booking.pk, now=at(13, 30))
+        self.assertEqual(self.status(), Booking.Status.IN_PROGRESS)
     def test_finish_requires_started_session(self):
         with self.assertRaises(BookingError):
             services.finish_session(booking_id=self.booking.pk, now=at(12, 30))

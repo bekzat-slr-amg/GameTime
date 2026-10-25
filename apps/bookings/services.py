@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+﻿from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.db import IntegrityError, transaction
@@ -203,7 +203,7 @@ def cancel_booking(*, booking_id, user, now=None):
 START_EARLY = timedelta(minutes=15)
 
 ACTION_ERRORS = {
-    "start": "Сеанс сейчас нельзя начать: бронь должна быть подтверждена, а время — не раньше чем за 15 минут до начала и не позже окончания.",
+    "start": "Сеанс сейчас нельзя начать: бронь должна быть подтверждена, а время — не раньше чем за 15 минут до начала.",
     "finish": "Завершить можно только начатый сеанс.",
     "no_show": "Неявку можно отметить только у подтверждённой брони после времени её начала.",
 }
@@ -213,7 +213,7 @@ def allowed_actions(booking, now):
     """Какие действия администратора допустимы для брони прямо сейчас."""
     actions = []
     if booking.status == Booking.Status.CONFIRMED:
-        if booking.start_at - START_EARLY <= now < booking.end_at:
+        if booking.start_at - START_EARLY <= now:
             actions.append("start")
         if now >= booking.start_at:
             actions.append("no_show")
