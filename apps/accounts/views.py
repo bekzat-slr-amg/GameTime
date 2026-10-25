@@ -1,10 +1,14 @@
-from django.contrib import messages
+﻿from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
+
+from django.utils import timezone
+
+from apps.bookings.models import Booking
 
 from .forms import LoginForm, ProfileForm, RegisterForm, StyledPasswordChangeForm
 
@@ -41,6 +45,12 @@ class ProfileView(LoginRequiredMixin, UpdateView):
     form_class = ProfileForm
     template_name = "accounts/profile.html"
     success_url = reverse_lazy("accounts:profile")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["recent_bookings"] = Booking.objects.filter(user=self.request.user).select_related("equipment")[:4]
+        ctx["now"] = timezone.now()
+        return ctx
 
     def get_object(self, queryset=None):
         return self.request.user

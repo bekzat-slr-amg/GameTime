@@ -1,4 +1,4 @@
-{% extends "accounts/profile_base.html" %}
+﻿{% extends "accounts/profile_base.html" %}
 {% block title %}Профиль — GameTime{% endblock %}
 
 {% block profile_content %}
@@ -34,6 +34,22 @@
 
 <section class="card mt-6">
   <h2 class="text-lg font-bold">Недавние бронирования</h2>
-  <p class="mt-2 text-sm text-muted">Здесь появятся ваши брони, когда будет готово бронирование.</p>
+  {% if recent_bookings %}
+    <ul class="mt-4 space-y-3">
+      {% for booking in recent_bookings %}
+        <li class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-bg p-4">
+          <div>
+            <a href="{% url 'bookings:detail' booking.pk %}" class="font-bold hover:text-lime">{{ booking.equipment.name }}</a>
+            <p class="text-sm text-muted">{{ booking.start_at|date:"d.m.Y" }}, {{ booking.start_at|time:"H:i" }}–{{ booking.end_at|time:"H:i" }}</p>
+          </div>
+          <div class="text-right">{% include "partials/booking_status.html" %}</div>
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'bookings:mine' %}" class="mt-4 inline-block text-sm font-bold text-lime hover:underline">Все брони →</a>
+  {% else %}
+    <p class="mt-2 text-sm text-muted">Бронирований пока нет.</p>
+    <a href="{% url 'equipment:list' %}" class="btn-primary mt-4">Выбрать оборудование</a>
+  {% endif %}
 </section>
 {% endblock %}

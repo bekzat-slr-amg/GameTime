@@ -1,0 +1,106 @@
+﻿{% extends "base.html" %}
+{% block title %}Отчёт — GameTime{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+  <a href="{% url 'club:dashboard' %}" class="text-sm font-semibold text-muted hover:text-lime">← Панель клуба</a>
+  <h1 class="mt-3 text-3xl font-extrabold">Отчёт за период</h1>
+  <p class="mt-1 text-muted">{{ start|date:"d.m.Y" }} — {{ end|date:"d.m.Y" }}</p>
+
+  {% if note %}
+    <p role="status" class="mt-3 rounded-xl border border-line bg-bg p-3 text-sm text-muted">{{ note }}</p>
+  {% endif %}
+
+  <form method="get" class="card mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+    <div>
+      <label for="from" class="mb-1.5 block text-sm font-semibold">С</label>
+      <input id="from" type="date" name="from" value="{{ start|date:'Y-m-d' }}" class="input">
+    </div>
+    <div>
+      <label for="to" class="mb-1.5 block text-sm font-semibold">По</label>
+      <input id="to" type="date" name="to" value="{{ end|date:'Y-m-d' }}" class="input">
+    </div>
+    <div class="flex items-end"><button type="submit" class="btn-primary w-full">Показать</button></div>
+  </form>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-3">
+    <div class="card">
+      <p class="text-sm text-muted">Броней</p>
+      <p class="mt-1 text-3xl font-extrabold">{{ report.count }}</p>
+      <p class="mt-1 text-xs text-muted">без отменённых и неявок</p>
+    </div>
+    <div class="card">
+      <p class="text-sm text-muted">Занятые часы</p>
+      <p class="mt-1 text-3xl font-extrabold">{{ report.hours|floatformat:"-1" }}</p>
+      <p class="mt-1 text-xs text-muted">по тем же броням</p>
+    </div>
+    <div class="card">
+      <p class="text-sm text-muted">Выручка</p>
+      <p class="mt-1 text-3xl font-extrabold text-lime">{{ report.revenue|floatformat:"-2" }} сом</p>
+      <p class="mt-1 text-xs text-muted">завершённые сеансы</p>
+    </div>
+  </div>
+
+  <h2 class="mt-8 text-lg font-bold">По статусам</h2>
+  <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
+    {% for s in report.statuses %}
+      <div class="card !p-4"><p class="text-sm text-muted">{{ s.label }}</p><p class="text-2xl font-extrabold">{{ s.count }}</p></div>
+    {% endfor %}
+  </div>
+
+  {% if report.days %}
+    <h2 class="mt-8 text-lg font-bold">По дням</h2>
+    <div class="card mt-3 overflow-x-auto !p-0">
+      <table class="w-full min-w-[28rem] text-left text-sm">
+        <thead class="border-b border-line text-muted">
+          <tr>
+            <th scope="col" class="px-4 py-3 font-semibold">Дата</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Броней</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Часы</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Выручка</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in report.days %}
+            <tr class="border-b border-line last:border-0">
+              <td class="px-4 py-3 font-bold">{{ row.day|date:"d.m.Y" }}</td>
+              <td class="px-4 py-3">{{ row.count }}</td>
+              <td class="px-4 py-3">{{ row.hours|floatformat:"-1" }}</td>
+              <td class="px-4 py-3 font-bold text-lime">{{ row.revenue|floatformat:"-2" }} сом</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="mt-8 text-lg font-bold">По оборудованию</h2>
+    <div class="card mt-3 overflow-x-auto !p-0">
+      <table class="w-full min-w-[28rem] text-left text-sm">
+        <thead class="border-b border-line text-muted">
+          <tr>
+            <th scope="col" class="px-4 py-3 font-semibold">Оборудование</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Броней</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Часы</th>
+            <th scope="col" class="px-4 py-3 font-semibold">Выручка</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in report.equipment %}
+            <tr class="border-b border-line last:border-0">
+              <td class="px-4 py-3 font-bold">{{ row.name }}</td>
+              <td class="px-4 py-3">{{ row.count }}</td>
+              <td class="px-4 py-3">{{ row.hours|floatformat:"-1" }}</td>
+              <td class="px-4 py-3 font-bold text-lime">{{ row.revenue|floatformat:"-2" }} сом</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="card mt-6 text-center">
+      <p class="font-bold">За этот период броней нет</p>
+      <p class="mt-1 text-sm text-muted">Выберите другие даты.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
