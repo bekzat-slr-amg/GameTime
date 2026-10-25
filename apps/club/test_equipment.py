@@ -257,14 +257,14 @@ class ToggleTests(Base, TestCase):
         self.assertIn("выключено", last_message(response))
         self.pc.refresh_from_db()
         self.assertFalse(self.pc.is_active)
-        self.assertNotContains(self.client.get(reverse("equipment:list")), "Toggle Box 1")
+        self.assertEqual(list(self.client.get(reverse("equipment:list")).context["items"]), [])
 
     def test_enable_returns_equipment_to_catalog(self):
         self.pc.is_active = False
         self.pc.save()
         response = self.post("1")
         self.assertIn("снова доступно", last_message(response))
-        self.assertContains(self.client.get(reverse("equipment:list")), "Toggle Box 1")
+        self.assertEqual([i.pk for i in self.client.get(reverse("equipment:list")).context["items"]], [self.pc.pk])
 
     def test_disable_reports_upcoming_bookings_and_keeps_them(self):
         upcoming = self.booking(timedelta(days=1))
