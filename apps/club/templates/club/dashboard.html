@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-  <div class="flex flex-wrap items-center justify-between gap-3"><h1 class="text-3xl font-extrabold">Панель клуба</h1><a href="{% url 'club:reports' %}" class="btn-outline">Отчёты</a></div>
+  <div class="flex flex-wrap items-center justify-between gap-3"><h1 class="text-3xl font-extrabold">Панель клуба</h1><div class="flex gap-2"><a href="{% url 'club:equipment_list' %}" class="btn-outline">Оборудование</a><a href="{% url 'club:reports' %}" class="btn-outline">Отчёты</a></div></div>
   <p class="mt-1 text-muted">{{ day|date:"j E Y" }}</p>
 
   <div class="mt-6 grid gap-4 sm:grid-cols-3">
