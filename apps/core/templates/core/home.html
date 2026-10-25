@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
@@ -88,7 +88,7 @@
   <dl class="card mt-6 grid gap-6 sm:grid-cols-3">
     <div>
       <dt class="text-sm text-muted">Часы работы</dt>
-      <dd class="mt-1 font-bold">10:00 – 02:00 (демо)</dd>
+      <dd class="mt-1 font-bold">{{ club.opening_time|time:"H:i" }} – {{ club.closing_time|time:"H:i" }}</dd>
     </div>
     <div>
       <dt class="text-sm text-muted">Адрес</dt>

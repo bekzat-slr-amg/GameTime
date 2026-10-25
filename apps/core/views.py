@@ -1,6 +1,7 @@
-from django.db.models import Count, Min, Q
+﻿from django.db.models import Count, Min, Q
 from django.shortcuts import render
 
+from apps.bookings.models import ClubSettings
 from apps.equipment.models import Equipment, Zone
 
 FEATURES = [
@@ -25,6 +26,7 @@ def home(request):
 
     return render(request, "core/home.html", {
         "features": FEATURES,
+        "club": ClubSettings.load(),
         "equipment": available.filter(is_featured=True)[:4],
         "zones": zones,
         "tariffs": tariffs,

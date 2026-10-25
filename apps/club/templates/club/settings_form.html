@@ -1,0 +1,30 @@
+﻿{% extends "base.html" %}
+{% load static %}
+{% block title %}Часы работы — GameTime{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+  <a href="{% url 'club:dashboard' %}" class="text-sm font-semibold text-muted hover:text-lime">← Панель клуба</a>
+  <h1 class="mt-3 text-3xl font-extrabold">Часы работы</h1>
+  <p class="mt-1 text-muted">Бронь возможна только внутри этого интервала. Работа через полночь не поддерживается.</p>
+
+  <form method="post" class="card mt-5 grid gap-4" data-submit-once>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div role="alert" class="rounded-xl border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-300">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% include "partials/form_field.html" with field=form.opening_time %}
+      {% include "partials/form_field.html" with field=form.closing_time %}
+    </div>
+    {% include "partials/form_field.html" with field=form.timezone %}
+    <p class="-mt-2 text-xs text-muted">Например, Asia/Bishkek. Слоты и отчёты считаются по этому времени.</p>
+    <div class="flex flex-wrap gap-3">
+      <button type="submit" class="btn-primary">Сохранить</button>
+      <a href="{% url 'club:dashboard' %}" class="btn-outline">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/auth.js' %}" defer></script>{% endblock %}
