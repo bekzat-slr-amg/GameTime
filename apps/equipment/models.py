@@ -1,6 +1,7 @@
-from decimal import Decimal
+﻿from decimal import Decimal
 
 from django.core.validators import MinValueValidator
+from django.templatetags.static import static
 from django.db import models
 
 
@@ -39,6 +40,7 @@ class Equipment(models.Model):
         blank=True,
         help_text="Относительно static/, например images/pc-pro-01.jpg",
     )
+    photo = models.ImageField("Фото", upload_to="equipment/", blank=True)
     is_active = models.BooleanField("Доступно для брони", default=True)
     is_featured = models.BooleanField("Показывать на главной", default=False)
 
@@ -54,3 +56,11 @@ class Equipment(models.Model):
     @property
     def specs_list(self):
         return [line.strip() for line in self.specs.splitlines() if line.strip()]
+    @property
+    def image_url(self):
+        """Загруженное фото, иначе файл из static/, иначе пусто (карточка покажет заглушку)."""
+        if self.photo:
+            return self.photo.url
+        if self.image:
+            return static(self.image)
+        return ""

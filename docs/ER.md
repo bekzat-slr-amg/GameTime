@@ -27,7 +27,8 @@ erDiagram
         string type "pc | console"
         text specs
         decimal hourly_rate "сом/час"
-        string image "путь в static/"
+        string photo "файл в media/equipment/"
+        string image "демо-путь в static/"
         bool is_active
         bool is_featured
     }

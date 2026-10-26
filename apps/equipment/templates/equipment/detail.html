@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 {% block title %}{{ item.name }} — GameTime{% endblock %}
 
@@ -8,8 +8,8 @@
 
   <div class="mt-4 grid gap-6 lg:grid-cols-2">
     <div class="self-start overflow-hidden rounded-2xl border border-line">
-      {% if item.image %}
-        <img src="{% static item.image %}" alt="{{ item.name }}" class="h-full max-h-96 w-full object-cover">
+      {% if item.image_url %}
+        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full max-h-96 w-full object-cover">
       {% else %}
         <div class="flex h-72 items-center justify-center bg-gradient-to-br from-surface-2 to-bg" role="img" aria-label="Фото появится позже">
           <span class="text-5xl font-extrabold text-line">{{ item.get_type_display }}</span>
