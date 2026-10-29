@@ -14,3 +14,13 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ---- Продакшен ----
+from django.http import HttpResponse  # noqa: E402
+from django.urls import re_path  # noqa: E402
+from django.views.static import serve  # noqa: E402
+
+urlpatterns += [path("healthz/", lambda request: HttpResponse("ok"), name="healthz")]
+
+if settings.SERVE_MEDIA and not settings.DEBUG:
+    urlpatterns += [re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT})]

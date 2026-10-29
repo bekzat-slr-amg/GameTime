@@ -1,0 +1,17 @@
+﻿services:
+  - type: web
+    name: gametime
+    runtime: docker
+    dockerfilePath: ./Dockerfile.prod
+    plan: free
+    region: frankfurt
+    healthCheckPath: /healthz/
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: SERVE_MEDIA
+        value: "1"
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false

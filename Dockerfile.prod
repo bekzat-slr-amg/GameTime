@@ -1,0 +1,27 @@
+﻿# --- этап 1: сборка CSS Tailwind ---
+FROM node:22-alpine AS css
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY static/src ./static/src
+COPY templates ./templates
+COPY apps ./apps
+RUN mkdir -p static/css && npx @tailwindcss/cli -i ./static/src/input.css -o ./static/css/styles.css --minify
+
+# --- этап 2: приложение ---
+FROM python:3.13-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+COPY --from=css /build/static/css/styles.css ./static/css/styles.css
+RUN DJANGO_SECRET_KEY=build-only python manage.py collectstatic --noinput
+
+RUN useradd --create-home app && mkdir -p /app/media && chown -R app:app /app/media
+USER app
+
+EXPOSE 10000
+CMD ["sh", "-c", "python manage.py migrate --noinput && exec gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 60 --access-logfile -"]

@@ -1,4 +1,4 @@
-import os
+﻿import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,9 +55,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        "NAME": os.environ.get("POSTGRES_DB", "gametime"),
+        "USER": os.environ.get("POSTGRES_USER", "gametime"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
         "HOST": os.environ.get("POSTGRES_HOST", "db"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     }
@@ -89,3 +89,34 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---- Продакшен (Render + Neon) ----
+from config.dburl import parse_database_url  # noqa: E402
+
+_database_url = os.environ.get("DATABASE_URL")
+if _database_url:
+    DATABASES = {
+        "default": {**parse_database_url(_database_url), "CONN_MAX_AGE": 60, "CONN_HEALTH_CHECKS": True}
+    }
+
+_render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if _render_host:
+    ALLOWED_HOSTS.append(_render_host)
+
+CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h not in ("localhost", "127.0.0.1")]
+
+# Раздача загруженных фото самим Django (для демо; на free-плане Render диск временный)
+SERVE_MEDIA = os.environ.get("SERVE_MEDIA") == "1"
+
+if not DEBUG:
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+    }
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600
